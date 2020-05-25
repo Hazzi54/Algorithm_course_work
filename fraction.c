@@ -60,7 +60,7 @@ int fractLess(struct fractions a, struct fractions b) {
 
 struct fractions fractAdd(struct fractions a, struct fractions b) {
 	struct fractions t;
-	int k, n, d;
+	int k, l, d;
 	if (a.den == b.den) {
 		t.nu = a.nu + b.nu;
 		t.den = a.den;	
@@ -69,17 +69,17 @@ struct fractions fractAdd(struct fractions a, struct fractions b) {
 		t.nu = a.nu * b.den + a.den * b.nu;
 		t.den = a.den * b.den;
 	}
-	n = t.nu;
+	l = t.nu;
 	d = t.den;
-	k = NOD(n, d);
-	t.nu = n / k;
+	k = NOD(l, d);
+	t.nu = l / k;
 	t.den = d / k;
 	return t;
 }
 
 struct fractions fractSub(struct fractions a, struct fractions b) {
 	struct fractions t;
-	int k, n, d;
+	int k, l, d;
 	if (a.den == b.den) {
 		t.nu = a.nu - b.nu;
 		t.den = a.den;	
@@ -88,17 +88,17 @@ struct fractions fractSub(struct fractions a, struct fractions b) {
 		t.nu = a.nu * b.den - a.den * b.nu;
 		t.den = a.den * b.den;
 	}
-	n = t.nu;
+	l = t.nu;
 	d = t.den;
-	k = NOD(n, d);
-	t.nu = n / k;
+	k = NOD(l, d);
+	t.nu = l / k;
 	t.den = d / k;
 	return t;
 }
 
 struct fractions fractMul(struct fractions a, struct fractions b) {
 	struct fractions t;
-	int k, n, d;
+	int k, l, d;
 	t.nu = a.nu * b.nu;
 	t.den = a.den * b.den;
 	if (t.nu < 0 && t.den < 0) {
@@ -109,17 +109,17 @@ struct fractions fractMul(struct fractions a, struct fractions b) {
 		t.nu *= (-1);
 		t.den *= (-1);		
 	}
-	n = t.nu;
+	l = t.nu;
 	d = t.den;
-	k = NOD(n, d);
-	t.nu = n / k;
+	k = NOD(l, d);
+	t.nu = l / k;
 	t.den = d / k;
 	return t;	
 }
 
 struct fractions fractDiv(struct fractions a, struct fractions b) {
 	struct fractions t;
-	int k, n, d;
+	int k, l, d;
 	t.nu = a.nu * b.den;
 	t.den = a.den * b.nu;
 	if (t.nu < 0 && t.den < 0) {
@@ -130,10 +130,10 @@ struct fractions fractDiv(struct fractions a, struct fractions b) {
 		t.nu *= (-1);
 		t.den *= (-1);		
 	}
-	n = t.nu;
+	l = t.nu;
 	d = t.den;
-	k = NOD(n, d);
-	t.nu = n / k;
+	k = NOD(l, d);
+	t.nu = l / k;
 	t.den = d / k;
 	return t;	
 }

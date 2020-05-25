@@ -3,7 +3,7 @@
 int main() {
     FILE *f = fopen("file.txt", "r");
 
-    int k, i, j;
+    int k, i, j, n, m;
     fscanf(f, "%d", &n);
     fscanf(f, "%d", &m);
     m++;
@@ -56,9 +56,9 @@ int main() {
 	printf("\n");
 	
 	printf("Source mas:\n");
-	print(mas);
-	rect(mas, bazis);
-	newZ(bazis, mas, Z);
+	print(mas, n, m);
+	rect(mas, bazis, n, m);
+	newZ(bazis, mas, Z, n, m);
 	printf("With basis ");
 	
 	i = 0;
@@ -67,7 +67,7 @@ int main() {
 		i++;
 	}
 	printf(":\n");
-	print(mas);
+	print(mas, n, m);
 	printf("New Z = ");
 	
 	i = 0;
@@ -78,8 +78,8 @@ int main() {
 	printf("\b \n\n");
 
 	printf("Simplex method:\n");
-	print_simplex_table(bazis, mas, Q, Z, 1);
-	simplex_met(bazis, mas, Q, Z);
+	print_simplex_table(bazis, mas, Q, Z, 1, n, m);
+	simplex_met(bazis, mas, Q, Z, n, m);
 	
 	printf("Z = %d/%d\n", Z[m - 1].nu * (-1), Z[m - 1].den);
 	fclose(f);

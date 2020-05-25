@@ -1,6 +1,6 @@
 #include "fraction.h"
 
-void simplex_met(int *bazis, struct fractions **mas2, struct fractions *Q, struct fractions *Z) {
+void simplex_met(int *bazis, struct fractions **mas2, struct fractions *Q, struct fractions *Z, int n, int m) {
 	int k, l, i, j;
 	struct fractions del, zir;
 	zir.nu = 0;
@@ -14,17 +14,17 @@ void simplex_met(int *bazis, struct fractions **mas2, struct fractions *Q, struc
         i++;
     }
 
-	while(!opt(Z)) {
-		copy(mas, mas2);
-		k = max_mod_Z(Z);
+	while(!opt(Z, m)) {
+		copy(mas, mas2, n, m);
+		k = max_mod_Z(Z, m);
 		i = 0;
 		while(i < n) {
 			if(fractMore(mas[i][k], zir)) Q[i] = fractDiv(mas[i][m - 1], mas[i][k]);
 			i++;
 		}
 		
-		l = min_Q(Q);
-		print_simplex_table(bazis, mas2, Q, Z, 1);
+		l = min_Q(Q, n);
+		print_simplex_table(bazis, mas2, Q, Z, 1, n, m);
 		printf("A[%d][%d] - main\n\n", l + 1, k + 1);
 		
 		bazis[l] = k;
@@ -41,14 +41,14 @@ void simplex_met(int *bazis, struct fractions **mas2, struct fractions *Q, struc
 			mas2[l][i] = fractDiv(mas2[l][i], del);
 			i++;
 		}
-		copy(mas, mas2);
+		copy(mas, mas2, n ,m);
 		i = 0;
 		while(i < m){
 			Z2[i] = fractSub(fractMul(mas[l][k], Z[i]), fractMul(mas[l][i], Z[k]));
 			i++;
 		}
 		
-		copy_one(Z, Z2, m);
+		memcpy(Z, Z2, m * sizeof(struct fractions));
 		i = 0;
 		while(i < n) {
 		    j = 0;
@@ -60,13 +60,13 @@ void simplex_met(int *bazis, struct fractions **mas2, struct fractions *Q, struc
 			}
 			i++;
 		}
-		copy(mas, mas2);
-		print_simplex_table(bazis, mas2, Q, Z, 1);			
+		copy(mas, mas2, n, m);
+		print_simplex_table(bazis, mas2, Q, Z, 1, n, m);			
 	}
 	free(mas);
 }
 
-int max_mod_Z(struct fractions *Z){
+int max_mod_Z(struct fractions *Z, int m){
 	struct fractions maxZ = Z[0];
 	int maxI = 0, i = 0;
 	while(i < m - 1) {
@@ -79,7 +79,7 @@ int max_mod_Z(struct fractions *Z){
 	return maxI;	
 }
 
-int min_Q(struct fractions *Q){
+int min_Q(struct fractions *Q, int n){
 	struct fractions minn;
 	minn.nu = 10000;
 	minn.den = 1;
@@ -97,7 +97,7 @@ int min_Q(struct fractions *Q){
 	}
 	return minI;	
 }
-int opt(struct fractions *Z){
+int opt(struct fractions *Z, int m){
 	struct fractions zir;
 	zir.nu = 0;
 	zir.den = 1;
@@ -109,7 +109,7 @@ int opt(struct fractions *Z){
 	return 1;
 }
 
-void print_simplex_table(int *bazis, struct fractions **mas, struct fractions *Q, struct fractions *Z, int flag) {
+void print_simplex_table(int *bazis, struct fractions **mas, struct fractions *Q, struct fractions *Z, int flag, int n, int m) {
 	int i, j;
 	struct fractions zir;
 	zir.nu = 0;
@@ -186,7 +186,7 @@ void print_simplex_table(int *bazis, struct fractions **mas, struct fractions *Q
 	printf("\n");
 }
 
-int rect(struct fractions **mas2, int *C) {
+int rect(struct fractions **mas2, int *C, int n, int m) {
 	int i, j = 0, q, f;
 	struct fractions zir, one, del;
 	zir.nu = 0;
@@ -206,8 +206,8 @@ int rect(struct fractions **mas2, int *C) {
     int flag_bazis[n];
     memset(flag_bazis, 0, n * sizeof(int));
 
-	copy(sys, mas2);
-	copy(mas, mas2);
+	copy(sys, mas2, n, m);
+	copy(mas, mas2, n, m);
 
 	i = 0;
 	while(i < n) {
@@ -234,7 +234,7 @@ int rect(struct fractions **mas2, int *C) {
 					}
 					q++;
 				}	
-				copy(mas, sys);
+				copy(mas, sys, n, m);
 				flag_bazis[j] = 1;
 				break;	
 			}
@@ -242,13 +242,13 @@ int rect(struct fractions **mas2, int *C) {
 		}
 		i++;
 	}
-	copy(mas2, mas);
+	copy(mas2, mas, n, m);
 	free(mas);
 	free(sys);
 	return 1;
 }
 
-void newZ(int *bazis, struct fractions **mas, struct fractions *Z){
+void newZ(int *bazis, struct fractions **mas, struct fractions *Z, int n, int m){
 	struct fractions Z2[m];	
 	int *fre = (int *)malloc(sizeof(int)), size = 1;
 	struct fractions zir;
@@ -258,7 +258,7 @@ void newZ(int *bazis, struct fractions **mas, struct fractions *Z){
 	while(i < m - 1) {
 		Z2[i].nu = 0;
 		Z2[i].den = 1;
-		if(!in_bazis(bazis, i)) {
+		if(!in_bazis(bazis, i, n)) {
 			fre[size - 1] = i;
 			fre = (int *)realloc(fre, sizeof(int) + size);
 			size++;
@@ -271,8 +271,8 @@ void newZ(int *bazis, struct fractions **mas, struct fractions *Z){
 	
 	i = 0;
 	while(i < m - 1) {
-		if(fractNotEq(Z[i], zir) && in_bazis(bazis,i)) {
-			k = bazis_line(bazis, i);
+		if(fractNotEq(Z[i], zir) && in_bazis(bazis, i, n)) {
+			k = bazis_line(bazis, i, n);
 			j = 0;
 			while(j < size) {
 				Z2[fre[j]] = fractSub(Z2[fre[j]], fractMul(Z[i], mas[k][fre[j]]));
@@ -286,11 +286,23 @@ void newZ(int *bazis, struct fractions **mas, struct fractions *Z){
 		i++;		
 	}
 	printf("\n");	
-	copy_one(Z, Z2, m);
+	memcpy(Z, Z2, m * sizeof(struct fractions));
+	i = 0;
+	while(i < m) {
+		printf("%d ", Z[i].nu);
+		i++;
+	}
+	printf("\n");
+	i = 0;
+	while(i < m) {
+		printf("%d ", Z2[i].nu);
+		i++;
+	}
+	printf("\n");
 	free(fre);
 }
 
-int bazis_line(int *bazis, int j) {
+int bazis_line(int *bazis, int j, int n) {
 	int i = 0;
 	while(i < n){
 		if(j == bazis[i]) return i;
@@ -298,7 +310,7 @@ int bazis_line(int *bazis, int j) {
 	}
 }
 
-int in_bazis(int *bazis, int j) {
+int in_bazis(int *bazis, int j, int n) {
 	int i = 0;
 	while(i < n) {
 		if(j == bazis[i]) return 1;
@@ -307,7 +319,7 @@ int in_bazis(int *bazis, int j) {
 	return 0;
 }
 
-void print(struct fractions **mas) {
+void print(struct fractions **mas, int n, int m) {
     int i = 0, j;
     while(i < n) {
     	j = 0;
@@ -322,7 +334,7 @@ void print(struct fractions **mas) {
 	printf("\n");
 }
 
-void copy(struct fractions **mas1, struct fractions **mas2) {
+void copy(struct fractions **mas1, struct fractions **mas2, int n, int m) {
 	int i = 0, j;
     while(i < n) {
     	j = 0;
@@ -330,14 +342,6 @@ void copy(struct fractions **mas1, struct fractions **mas2) {
     		mas1[i][j] = mas2[i][j];
     		j++;
 		}
-		i++;
-	}
-}
-
-void copy_one(struct fractions *mas1, struct fractions *mas2, int size) {
-	int i = 0;
-	while(i < size) {
-		mas1[i] = mas2[i];
 		i++;
 	}
 }

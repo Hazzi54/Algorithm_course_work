@@ -11,7 +11,7 @@ struct fractions {
     int den;
 };
 
-int n, m;
+//int n, m;
 
 int NOD(int, int);
 void def_number(double, double, struct fractions *);
@@ -28,18 +28,17 @@ struct fractions fractSubInt(struct fractions, int);
 struct fractions fractMulInt(struct fractions, int);
 struct fractions fractDivInt(struct fractions, int);
 
-int rect(struct fractions **, int *);
-void newZ(int *, struct fractions **, struct fractions *);
-int bazis_line(int *, int);
-int in_bazis(int *, int);
-int opt(struct fractions *);
-int max_mod_Z (struct fractions *);
-int min_Q(struct fractions *);
+int rect(struct fractions **, int *, int, int);
+void newZ(int *, struct fractions **, struct fractions *, int, int);
+int bazis_line(int *, int, int);
+int in_bazis(int *, int, int);
+int opt(struct fractions *, int);
+int max_mod_Z (struct fractions *, int);
+int min_Q(struct fractions *, int);
 
-void simplex_met(int *, struct fractions **, struct fractions *, struct fractions *);
-void print(struct fractions **);
-void print_simplex_table(int *, struct fractions **, struct fractions *, struct fractions *, int);
-void copy(struct fractions **, struct fractions **);
-void copy_one(struct fractions *, struct fractions *, int);
+void simplex_met(int *, struct fractions **, struct fractions *, struct fractions *, int, int);
+void print(struct fractions **, int, int);
+void print_simplex_table(int *, struct fractions **, struct fractions *, struct fractions *, int, int, int);
+void copy(struct fractions **, struct fractions **, int, int);
 
 #endif
